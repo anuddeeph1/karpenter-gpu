@@ -1,0 +1,43 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  creationTimestamp: "2023-06-02T11:56:52Z"
+  generation: 2
+  name: gpu-shared
+  resourceVersion: "543341"
+  uid: 0fae906f-5445-49a0-8203-88c3b43a003d
+spec:
+  labels:
+    jina.ai/gpu-type: nvidia
+    jina.ai/node-type: gpu-shared
+    nvidia.com/device-plugin.config: shared_gpu
+  limits:
+    resources:
+      cpu: 1k
+  providerRef:
+    name: gpu-shared
+  requirements:
+  - key: node.kubernetes.io/instance-type
+    operator: In
+    values:
+    - g4dn.xlarge
+    - g4dn.2xlarge
+    - g4dn.4xlarge
+    - g4dn.12xlarge
+  - key: karpenter.sh/capacity-type
+    operator: In
+    values:
+    - spot
+    - on-demand
+  - key: kubernetes.io/arch
+    operator: In
+    values:
+    - amd64
+  - key: kubernetes.io/os
+    operator: In
+    values:
+    - linux
+  taints:
+  - effect: NoSchedule
+    key: nvidia.com/gpu-shared
+  ttlSecondsAfterEmpty: 30

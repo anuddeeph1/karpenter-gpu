@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Create Launch Template For GPU Shared'
+Mappings:
+  ServicePrincipalPartitionMap:
+    aws:
+      EC2: ec2.amazonaws.com
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+    aws-cn:
+      EC2: ec2.amazonaws.com.cn
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+    aws-us-gov:
+      EC2: ec2.amazonaws.com
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Name of Cluster
+  SecurityGroups:
+    Type: CommaDelimitedList
+    Description: The list of SecurityGroupIds in your Virtual Private Cloud (VPC)
+Resources:
+  LaunchTemplate:
+    Type: 'AWS::EC2::LaunchTemplate'
+    Properties:
+      LaunchTemplateData:
+        ImageId: ami-06e48d448d4eae55e
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              Iops: 6000
+              Throughput: 300
+              VolumeSize: 360
+              VolumeType: gp3
+        MetadataOptions:
+          HttpPutResponseHopLimit: 2
+          HttpTokens: optional
+        SecurityGroupIds: !Ref SecurityGroups
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub ${ClusterName}-gpu-shared-karpenter-ng-Node
+              - Key: karpenter.sh/discovery
+                Value: !Sub ${ClusterName}
+              - Key: jina.ai/node-type
+                Value: gpu-shared
+          - ResourceType: volume
+            Tags:
+              - Key: Name
+                Value: !Sub ${ClusterName}-gpu-shared-karpenter-ng-Node
+              - Key: karpenter.sh/discovery
+                Value: !Sub ${ClusterName}
+              - Key: jina.ai/node-type
+                Value: gpu-shared
+          - ResourceType: network-interface
+            Tags:
+              - Key: Name
+                Value: !Sub ${ClusterName}-gpu-shared-karpenter-ng-Node
+              - Key: karpenter.sh/discovery
+                Value: !Sub ${ClusterName}
+              - Key: jina.ai/node-type
+                Value: gpu-shared
+      LaunchTemplateName: !Sub '${AWS::StackName}'

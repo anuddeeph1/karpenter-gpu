@@ -1,0 +1,39 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  creationTimestamp: "2023-06-02T14:34:29Z"
+  generation: 1
+  name: gpu
+  resourceVersion: "554476"
+  uid: 93d5e3ea-175e-498b-b888-5408056f81b3
+spec:
+  blockDeviceMappings:
+  - deviceName: /dev/xvda
+    ebs:
+      deleteOnTermination: true
+      iops: 2000
+      throughput: 150
+      volumeSize: 120Gi
+      volumeType: gp3
+  instanceProfile: KarpenterNodeInstanceProfile-Karpenter-test-03
+  metadataOptions:
+    httpEndpoint: enabled
+    httpPutResponseHopLimit: 2
+    httpTokens: optional
+  securityGroupSelector:
+    karpenter.sh/discovery: Karpenter-test-03
+  subnetSelector:
+    karpenter.sh/discovery: Karpenter-test-03
+  tags:
+    jina.ai/node-type: gpu
+    karpenter.sh/discovery: Karpenter-test-03
+    node-type: gpu
+status:
+  securityGroups:
+  - id: sg-0792ed5828190d5f4
+  - id: sg-07c3aef45b8163c69
+  subnets:
+  - id: subnet-0d37ec82297b311b6
+    zone: us-west-1a
+  - id: subnet-09360b7210c9822b0
+    zone: us-west-1b

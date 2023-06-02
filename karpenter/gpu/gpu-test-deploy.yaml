@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: gpu-pod
+  labels:
+    app: gpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpu
+  template:
+    metadata:
+      labels:
+        app: gpu
+    spec:
+      nodeSelector:
+        jina.ai/node-type: gpu
+        karpenter.sh/provisioner-name: gpu
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: cuda-container
+        image: nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda10.2
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+
+

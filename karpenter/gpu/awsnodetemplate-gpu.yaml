@@ -1,0 +1,26 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: gpu
+spec:
+  instanceProfile: KarpenterNodeInstanceProfile-Karpenter-test-03
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 120Gi
+        volumeType: gp3
+        iops: 2000
+        throughput: 150
+        deleteOnTermination: true
+  tags:
+    karpenter.sh/discovery: Karpenter-test-03
+    node-type: gpu
+    jina.ai/node-type: gpu
+  metadataOptions:
+    httpEndpoint: enabled
+    httpTokens: optional
+    httpPutResponseHopLimit: 2
+  subnetSelector:
+    karpenter.sh/discovery: Karpenter-test-03
+  securityGroupSelector:
+    karpenter.sh/discovery: Karpenter-test-03

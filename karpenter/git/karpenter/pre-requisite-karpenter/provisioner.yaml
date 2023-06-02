@@ -1,0 +1,20 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values: ["spot"]
+  limits:
+    resources:
+      cpu: 1000
+  provider:
+    instanceProfile: KarpenterNodeInstanceProfile-nirmata-eks-karpenter
+    subnetSelector:
+      karpenter.sh/discovery: nirmata-eks-karpenter
+    securityGroupSelector:
+      karpenter.sh/discovery: nirmata-eks-karpenter
+  ttlSecondsAfterEmpty: 30
+
